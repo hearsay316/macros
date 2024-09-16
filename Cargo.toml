@@ -1,0 +1,22 @@
+[package]
+name = "macros"
+version = "0.1.0"
+edition = "2021"
+[lib]
+proc-macro = true
+
+
+[dependencies]
+
+aes = "0.7"  # 最新版本
+anyhow = "1.0.88"
+block-modes = "0.8"  # 最新版本
+futures = { version = "0.3.30", default-features = false }
+tokio = { version = "1.37.0", features = ["rt", "rt-multi-thread", "macros"] }
+
+hex = "0.4"  # 最新版本
+rand = "0.8"  # 最新版本
+proc-macro2 = "1.0.86"
+quote = "1.0.37"
+syn = { version = "2.0.57", features = ["extra-traits"] }
+
