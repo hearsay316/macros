@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::Fields;
+use syn::{Fields};
 /// 这段代码定义了一个名为 EnumFrom 的过程宏，它用于为 Rust 中的枚举类型自动生成 From 实现。过程宏是一种在编译时运行的宏，它接收 Rust 代码作为输入，然后生成新的 Rust 代码作为输出。
 // 首先，宏通过 #[proc_macro_derive(EnumFrom)] 属性声明为过程宏，并定义了一个名为 derive_enum_from 的函数，该函数接收一个 TokenStream 类型的参数，这是 Rust 编译器内部表示代码的一种方式。
 // 在函数内部，使用 syn::parse_macro_input! 宏将输入的 TokenStream 解析为一个 syn::DeriveInput 结构体，这个结构体包含了关于输入代码的信息，比如标识符、数据等。
@@ -14,7 +14,11 @@ use syn::Fields;
 #[proc_macro_derive(EnumFrom)] // 定义一个过程宏 EnumFrom
 pub fn derive_enum_from(input: TokenStream) -> TokenStream {
     let input = syn::parse_macro_input!(input as syn::DeriveInput); // 解析输入的TokenStream为DeriveInput结构体
+    println!("{:#?}",input);
     let ident = input.ident; // 获取枚举的标识符
+    let generics = input.generics;
+
+
     let variants = match input.data{ // 匹配输入数据为枚举类型
         syn::Data::Enum(data)=>data.variants, // 获取枚举的所有变体
         _=>panic!("EnumFrom only works on enums "), // 如果不是枚举类型则报错
@@ -30,7 +34,7 @@ pub fn derive_enum_from(input: TokenStream) -> TokenStream {
                         let field = fields.unnamed.first().expect("应该只有一个"); // 获取第一个字段
                         let ty = &field.ty; // 获取字段类型
                         quote! { // 生成From实现
-                            impl From<#ty> for #ident{
+                            impl #generics From<#ty> for #ident #generics{
                                 fn from(v:#ty)-> Self{
                                     #ident::#var(v)
                                 }
@@ -49,3 +53,53 @@ pub fn derive_enum_from(input: TokenStream) -> TokenStream {
     .into() // 转换为TokenStream并返回
 }
 
+
+
+
+
+// pub fn derive_enum_from1(input: TokenStream) -> TokenStream {
+//     let input = syn::parse_macro_input!(input as syn::DeriveInput); // 解析输入的TokenStream为DeriveInput结构体
+//     println!("{:#?}",input);
+//     let ident = input.ident; // 获取枚举的标识符
+//     let generics = input.generics.params.first();
+//     let generics_ident =generics.map(|da|{
+//         match da {
+//             GenericParam::Type(data)=> &data.ident,
+//             _=>panic!("没有取出来 generics_ident的 ident")
+//         }
+//
+//     }).unwrap();
+//
+//     let variants = match input.data{ // 匹配输入数据为枚举类型
+//         syn::Data::Enum(data)=>data.variants, // 获取枚举的所有变体
+//         _=>panic!("EnumFrom only works on enums "), // 如果不是枚举类型则报错
+//     };
+//     let from_impls = variants.iter().map( // 遍历每个变体并生成From实现
+//                                           |variant|{
+//                                               let var = &variant.ident; // 获取变体的标识符
+//                                               match &variant.fields { // 匹配变体的字段
+//                                                   Fields::Unnamed(fields)=>{ // 如果字段未命名
+//                                                       if fields.unnamed.len()!=1{ // 如果未命名字段的数量不为1，则不生成实现
+//                                                           quote!{}
+//                                                       }else { // 如果只有一个未命名字段
+//                                                           let field = fields.unnamed.first().expect("应该只有一个"); // 获取第一个字段
+//                                                           let ty = &field.ty; // 获取字段类型
+//                                                           quote! { // 生成From实现
+//                             impl<#generics_ident> From<#ty> for #ident<#generics_ident>{
+//                                 fn from(v:#ty)-> Self{
+//                                     #ident::#var(v)
+//                                 }
+//                             }
+//                         }
+//                                                       }
+//                                                   }
+//                                                   _=>{ // 如果字段已命名或其他情况，则不生成实现
+//                                                       quote!{}
+//                                                   }
+//                                               }
+//                                           });
+//     (quote!{ // 将所有生成的From实现合并
+//         #(#from_impls)*
+//     })
+//         .into() // 转换为TokenStream并返回
+// }
