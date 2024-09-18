@@ -59,7 +59,9 @@ enum User {
     App(i64)
 }
 fn main() {
-    let key_seed: Option<i64> = Some(41);
+    let key_seed: Option<i64> = Some(41)else {
+        panic!("5555")
+    };
     let user = User::App(1);
     
     match user {
