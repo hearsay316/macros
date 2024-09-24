@@ -1,9 +1,10 @@
 mod enum_from;
-mod process_enum_darling;
-
+mod enum_from_darling;
+mod auto;
 use proc_macro::TokenStream;
+use syn::DeriveInput;
 use enum_from::process_enum_from;
-use process_enum_darling::process_enum_darling;
+use enum_from_darling::process_enum_darling;
 
 /// 这段代码定义了一个名为 EnumFrom 的过程宏，它用于为 Rust 中的枚举类型自动生成 From 实现。过程宏是一种在编译时运行的宏，它接收 Rust 代码作为输入，然后生成新的 Rust 代码作为输出。
 // 首先，宏通过 #[proc_macro_derive(EnumFrom)] 属性声明为过程宏，并定义了一个名为 derive_enum_from 的函数，该函数接收一个 TokenStream 类型的参数，这是 Rust 编译器内部表示代码的一种方式。
@@ -18,16 +19,26 @@ use process_enum_darling::process_enum_darling;
 #[proc_macro_derive(EnumFrom)] // 定义一个过程宏 EnumFrom
 pub fn derive_enum_from(input: TokenStream) -> TokenStream {
     let input = syn::parse_macro_input!(input as syn::DeriveInput); // 解析输入的TokenStream为DeriveInput结构体
-    println!("{:#?}",input);
+    println!("{:#?}", input);
     // .into() // 转换为TokenStream并返回
     process_enum_from(input).into()
 }
 
 #[proc_macro_derive(EnumFromDarling)]
-pub fn derive_enum_from_darling(input:TokenStream)->TokenStream{
+pub fn derive_enum_from_darling(input: TokenStream) -> TokenStream {
     // 解析输入的TokenStream为DeriveInput结构体
     let input = syn::parse_macro_input!(input as syn::DeriveInput);
     process_enum_darling(input).into()
 }
 
 
+#[proc_macro_derive(AutoDeref,attributes(deref))]
+pub fn derive_auto_deref(input: TokenStream) -> TokenStream {
+    let input = syn::parse_macro_input!(input as DeriveInput);
+    auto::process_auto_deref(input).into()
+}
+#[proc_macro_derive(AutoDebug,attributes(debug))]
+pub fn derive_auto_debug(input:TokenStream)->TokenStream{
+    let input = syn::parse_macro_input!(input as DeriveInput);
+    auto::process_auto_debug(input).into()
+}

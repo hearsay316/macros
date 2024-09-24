@@ -5,7 +5,7 @@ use quote::quote;
 use syn::{DeriveInput };
 
 
-
+#[allow(dead_code)]
 #[derive(Debug,FromDeriveInput)]
 struct EnumFromDarling {
     ident: syn::Ident,
@@ -13,12 +13,12 @@ struct EnumFromDarling {
     data: Data<EnumVariants, ()>,
 }
 
-
+#[allow(dead_code)]
 #[derive(Debug,FromVariant )]
 struct EnumVariants {
     ident: syn::Ident,
     fields: Fields<EnumVariantFields>,
-}
+}#[allow(dead_code)]
 #[derive(Debug,FromField)]
 struct EnumVariantFields {
     ty: syn::Type,
