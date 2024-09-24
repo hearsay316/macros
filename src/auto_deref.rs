@@ -81,6 +81,3 @@ pub(crate) fn process_auto_deref(input: DeriveInput) -> TokenStream {
         #(#code)*
     }
 }
-pub(crate) fn process_auto_debug(_input: DeriveInput) -> TokenStream {
-    quote! {}
-}

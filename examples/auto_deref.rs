@@ -1,3 +1,4 @@
+use std::fmt;
 use macros::AutoDeref;
 #[allow(unused)]
 #[derive(Debug,AutoDeref)]
@@ -9,9 +10,11 @@ pub struct RespBulkString{
 
 //    #[debug(skip)]
 fn main() {
-  let  s = RespBulkString{
+  let mut s = RespBulkString{
       inner:"hello".to_string(),
       nothing:()
   };
+    println!("{:?}",s);
+    s.inner.push_str(", Rust!");
     println!("{:?}",s);
 }
